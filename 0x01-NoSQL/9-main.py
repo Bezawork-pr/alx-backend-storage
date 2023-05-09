@@ -9,7 +9,6 @@ if __name__ == "__main__":
     school_collection = client.my_db.school
     new_school_id = insert_school(school_collection, name="UCSF", address="505 Parnassus Ave")
     print("New school created: {}".format(new_school_id))
-    print(school_collection)
     schools = list_all(school_collection)
 
     for school in schools:
