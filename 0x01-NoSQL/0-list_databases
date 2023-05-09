@@ -1,1 +1,4 @@
-show dbs
+#!/usr/bin/env python3
+"""Show databases in MongoDB"""
+if __name__ == "__main__":
+	show dbs
