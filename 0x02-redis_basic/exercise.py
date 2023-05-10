@@ -8,19 +8,18 @@ instance using flushdb
 """
 import redis
 import uuid
-from typing import TypeVar, Generic, Union
-T = TypeVar('T')
+from typing import Union
 
 
-class Cache(Generic[T]):
+class Cache:
     """class Cache"""
     def __init__(self) -> None:
         """Init method"""
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-    def store(self, arg: Union[str, bytes, int, float]) -> int:
+    def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes a data argument and returns a string"""
         id_ = str(uuid.uuid4())
-        self._redis.set(id_, arg)
-        return int(id_)
+        self._redis.set(id_, data)
+        return id_
