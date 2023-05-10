@@ -9,6 +9,19 @@ instance using flushdb
 import redis
 import uuid
 from typing import Union, Optional, Callable
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """define a count_calls decorator that takes
+    a single method Callable argument and returns a Callable"""
+    key = method.__qualname__
+
+    @wraps(method)
+    def wrapper(self, *args, **kwds):
+        self._redis.incr(key)
+        return method(self, *args, **kwds)
+    return wrapper
 
 
 class Cache:
@@ -18,13 +31,15 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes a data argument and returns a string"""
         id_ = str(uuid.uuid4())
         self._redis.set(id_, data)
         return id_
 
-    def get(self, key: str, fn: Optional[Callable] = None) ->  Union[str, bytes, int, float]:
+    def get(self, key: str,
+            fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
         """convert the data back to the desired format"""
         get = self._redis.get(key)
         if fn:
@@ -45,4 +60,3 @@ class Cache:
         except Exception as notInt:
             get = 0
         return get
-
